@@ -1,0 +1,16 @@
+{% extends 'webapp/base.html' %}
+
+{% block content %}
+
+{% if latest_trader_list %}
+    <ul>
+    {% for trader in latest_trader_list %}
+        <li><a href="{% url 'detail' trader.username %}">{{ trader.username }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No traders are available.</p>
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'webapp/base.html' %}
+
+{% block content %}
+
+<h1>{{ ad.ad_text }}</h1>
+
+Price: {{ ad.price }}
+</br>
+Posted on: {{ ad.post_date }}
+</br>
+By: {{ ad.trader }}
+</br>
+Location: {{ ad.location }}
+
+{% endblock %}
+
+
+

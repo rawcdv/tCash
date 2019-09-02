@@ -1,0 +1,91 @@
+{% extends 'webapp/base.html' %}
+
+{% block content %}
+  <h2>New ad</h2>
+  <form method="post">
+    {% csrf_token %}
+    <!-- selling =
+    ad_text = 
+    price = fo
+    markup = f
+    min_volume
+    max_volume
+    location =
+    place_id =
+    currency =
+
+
+      <div>
+        {{ form.selling.label_tag }}<br>
+        {{ form.selling }}
+        {% if form.selling.help_text %}
+          <small style="color: grey">{{ form.selling.help_text }}</small>
+        {% endif %}
+        {% for error in form.selling.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+      </div>
+       -->
+       {% for field in form %}
+       <p>
+         {{ field.label_tag }}<br>
+         {{ field }}
+         {% if field.help_text %}
+           <small style="color: grey">{{ field.help_text }}</small>
+         {% endif %}
+         {% for error in field.errors %}
+           <p style="color: red">{{ error }}</p>
+         {% endfor %}
+       </p>
+     {% endfor %}
+    <button type="submit">Submit</button>
+  </form>
+
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+          <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+            {{ message }}
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+{% endblock %}
+
+
+{% block javascript %}
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+  jQuery(document).ready(function($) {
+
+    $("#id_location").on('input', function(){
+
+      let location = $(this).val();
+      
+      $.ajax({
+        url: '/ajax/get_locations/',
+        data: {
+          'location': location
+        },
+        dataType: 'json',
+        success: data => {
+          console.log(data);
+          $("#id_location").autocomplete({
+            source: data['locations'],
+            select: function (event, ui) {
+              $("#id_location").val(ui.item.value); // display the selected text
+              $("#id_place_id").val(ui.item.id); // save selected id to hidden input
+            }
+          });
+        }
+      });
+    });
+  });
+
+</script>
+
+{% endblock %}

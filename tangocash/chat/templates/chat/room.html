@@ -1,0 +1,371 @@
+{% load static %}
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+
+<html>
+<head>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'style.css' %}">
+
+</head>
+<body>
+<div class="container">
+{% comment %} <h3 class=" text-center">Messaging</h3> {% endcomment %}
+<br/><br/>
+<div class="messaging">
+      <div class="inbox_msg">
+        <div class="inbox_people">
+          <div class="headind_srch">
+            <div class="recent_heading">
+              <h4>TangoCash</h4>
+            </div>
+            <div class="srch_bar">
+              <div class="stylish-input-group">
+                <input type="text" class="search-bar"  placeholder="Search" >
+                <span class="input-group-addon">
+                <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
+                </span> </div>
+            </div>
+          </div>
+
+
+          <div class="inbox_chat" id="headline-log">
+
+
+            {% comment %}
+            <div class="chat_list active_chat">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>{{ user.username }} <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+            
+
+            <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+            {% endcomment %}
+
+
+            {% comment %} <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div> {% endcomment %}
+            {% comment %} <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div> {% endcomment %}
+            {% comment %} <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div> {% endcomment %}
+            {% comment %} <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div> {% endcomment %}
+          </div>
+        </div>
+
+
+
+        <div class="mesgs" >
+          <div class="chat-log"  id="chat-log"></div>
+          <div class="type_msg">
+            <div class="input_msg_write">
+              <input id="chat-message-input" type="text" class="write_msg" placeholder="Type a message" />
+              <button id="chat-message-submit" class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-center top_spac"> Design by <a target="_blank" href="#">Sunil Rajput</a></p>
+    </div></div>
+
+
+<script src="{% static 'reconnecting-websocket.js' %}"></script>
+<script>
+    // var roomName = {{ room_name_json }};
+    {% if to_username %}
+    console.log( {{ to_username }} )
+    let data = {
+      'counterparty': {{ to_username }},
+      'timestamp': 'New Message',
+      'content': 'Send new message'
+    }
+    createHeadline(data);
+    {% endif %}
+
+    var username = {{ username }};
+    var chatSocket = new ReconnectingWebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/' + 'roomName' + '/');
+
+    chatSocket.onopen = function(e) {
+      fetchHeadlines();
+      updateScrollPosition();
+    }
+
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        if (data['command'] === 'messages') {
+          // for (let i=data['messages'].length - 1; i >= 0; i--) {
+          for (let i=0; i < data['messages'].length; i++) {
+            createMessage(data['messages'][i]);
+          }
+        } else if (data['command'] === 'new_message'){
+          createMessage(data['message']);
+        } else if (data['command'] === 'headlines'){
+          for (let i=0; i < data['messages'].length; i++) {
+            createHeadline(data['messages'][i]);
+          }
+          // simulates click on first chat
+          headlineClick(document.querySelector('#headline-log').children[0]);
+        }
+        updateScrollPosition();
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        var messageInputDom = document.getElementById('chat-message-input');
+        var message = messageInputDom.value;
+        var receiver = getSelectedChatAuthor();
+
+        chatSocket.send(JSON.stringify({
+            'command': 'new_message',
+            'message': message,
+            'from': username,
+            'to': receiver
+        }));
+        messageInputDom.value = '';
+    };
+
+    function fetchMessages(counterparty) {
+      chatSocket.send(JSON.stringify({
+        'command': 'fetch_messages',
+        'counterparty': counterparty
+      }));
+    }
+
+    function fetchHeadlines() {
+      chatSocket.send(JSON.stringify({'command': 'fetch_headlines' }));      
+    }
+
+    function updateScrollPosition() {
+      document.querySelector('#chat-log').scrollTop = document.querySelector('#chat-log').scrollHeight;
+    }
+
+    function headlineClick(targetClicked) {
+      clearMessagesDiv();
+      unselectChats();
+      selectChat(targetClicked);
+      fetchMessages(getSelectedChatAuthor());
+    }
+
+    function createHeadline(data) {
+      var headlineDiv = document.createElement('div');
+      headlineDiv.className = 'chat_list';
+
+      // click selects the chat
+      headlineDiv.onclick = function() { headlineClick(headlineDiv) };
+
+      var peopleDiv = document.createElement('div');
+      peopleDiv.className = 'chat_people';
+
+      var personImgDiv = document.createElement('div');
+      personImgDiv.className = 'chat_img';
+      var imgTag = document.createElement('img');
+      imgTag.src = 'https://ptetutorials.com/images/user-profile.png';
+      imgTag.alt = data['counterparty'];
+      personImgDiv.appendChild(imgTag);
+      peopleDiv.appendChild(personImgDiv);
+
+      var headlineContentDiv = document.createElement('div');
+      headlineContentDiv.className = 'chat_ib';
+      var titleText = document.createElement('h5');
+      titleText.innerText = data['counterparty']
+      var headlineSpanTag = document.createElement('span');
+      // can people do injection through this?
+      headlineSpanTag.className = 'chat_date';
+
+      try {
+        var time = data['timestamp'].split(' ')[1]
+        var date = data['timestamp'].split(' ')[0]
+
+        if(!time.split(":")[0] || !time.split(":")[1]) throw 'Invalid time'
+
+        headlineSpanTag.innerHTML =  time.split(":")[0] + ":" + time.split(":")[1] + " | " + date
+      } catch(e) {
+        // headline created without timestamp in standard format
+        headlineSpanTag.innerHTML = data['timestamp']
+      }
+
+      titleText.appendChild(headlineSpanTag);
+
+      var contentText = document.createElement('p');
+      contentText.innerText = data['content'];
+
+      headlineContentDiv.appendChild(titleText);
+      headlineContentDiv.appendChild(contentText);
+
+      headlineDiv.appendChild(peopleDiv);
+      peopleDiv.appendChild(headlineContentDiv);
+      document.querySelector('#headline-log').appendChild(headlineDiv);
+    }
+
+    function getSelectedChatAuthor() {
+      return getHeadlineAuthor(getSelectedChat());
+    }
+
+    function getHeadlineAuthor(headline) {
+      return headline.children[0].children[1].children[0].childNodes[0].textContent;
+    }
+
+    function selectChat(div) {
+      div.className += ' active_chat'
+    }
+
+    function unselectChats() {
+      let list = document.getElementsByClassName("active_chat")
+
+      for(let i = 0; i < list.length; i++){
+        list[i].className = list[i].className.replace(" active_chat", "")
+      }
+    }
+
+    function getSelectedChat() {
+      // return document.querySelector('#headline-log').children.namedItem("selected")
+      return document.getElementsByClassName("active_chat")[0]
+    }
+
+    function clearMessagesDiv() {
+      let myNode = document.querySelector('#chat-log');
+
+      while (myNode.firstChild) {
+        myNode.removeChild(myNode.firstChild);
+      }
+    }
+
+    function createMessage(data) {
+      var author = data['author'];
+      // container for message, class name is dependent on author for styling
+      var messageDiv = document.createElement('div');
+      
+      // text of the message
+      var messagePTag = document.createElement('p');
+      messagePTag.textContent = data.content;
+      // message timestamp tag
+      var spanTag = document.createElement('span')
+      var time = data['timestamp'].split(' ')[1]
+      var date = data['timestamp'].split(' ')[0]
+      spanTag.innerHTML =  time.split(":")[0] + ":" + time.split(":")[1] + " | " + date
+      spanTag.className = 'time_date'
+
+      // build message div depending on author
+      if (author === username) {
+        messageDiv.className = 'outgoing_msg'
+        var textDiv = document.createElement('div')
+        textDiv.className = 'sent_msg'
+
+        // connect components
+        textDiv.appendChild(messagePTag)
+        textDiv.appendChild(spanTag)
+        messageDiv.appendChild(textDiv)
+
+        {% comment %} 
+        // original html
+        <div class="outgoing_msg">
+              <div class="sent_msg">
+                <p>Apollo University, Delhi, India Test</p>
+                <span class="time_date"> 11:01 AM    |    Today</span> </div>
+        </div>
+        {% endcomment %}
+
+      } else {
+        messageDiv.className = 'incoming_msg'
+        var imgDiv = document.createElement('div')
+        imgDiv.className = 'incoming_msg_img'
+
+        var imgTag = document.createElement('img');
+        imgTag.src = 'https://ptetutorials.com/images/user-profile.png';
+        imgTag.alt = author
+        var authorNameTag = document.createElement('p');
+        authorNameTag.textContent = author;
+        imgDiv.appendChild(imgTag);
+        imgDiv.appendChild(authorNameTag);
+
+        var textAreaDiv = document.createElement('div')
+        textAreaDiv.className = 'received_msg';
+        var innerDiv = document.createElement('div')
+        innerDiv.className = 'received_withd_msg';
+        
+        // connect component
+        innerDiv.appendChild(messagePTag)
+        innerDiv.appendChild(spanTag)
+        textAreaDiv.appendChild(innerDiv)
+        messageDiv.appendChild(imgDiv)
+        messageDiv.appendChild(textAreaDiv)
+
+        {% comment %} 
+        // original html
+        <div class="incoming_msg">
+            <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+            <div class="received_msg">
+              <div class="received_withd_msg">
+                <p>Test, which is a new approach to have</p>
+                <span class="time_date"> 11:01 AM    |    Yesterday</span></div>
+            </div>
+          </div> 
+        {% endcomment %}
+      }
+      document.querySelector('#chat-log').appendChild(messageDiv);
+    }
+</script>
+</body>
+</html>

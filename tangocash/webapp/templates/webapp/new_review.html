@@ -1,0 +1,38 @@
+{% extends 'webapp/base.html' %}
+
+{% block content %}
+
+<h1 class="title is-1 has-text-centered">New Review</h1>
+
+<div class="level">
+  <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div>
+          {{ field.label_tag }}<br>
+          {{ field }}
+          {% if field.help_text %}
+            <small style="color: grey">{{ field.help_text }}</small>
+          {% endif %}
+          {% for error in field.errors %}
+            <p style="color: red">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit">Submit</button>
+    </form>
+</div>
+
+{% if messages %}
+<ul class="messages">
+  {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+      <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+        {{ message }}
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% endblock %}

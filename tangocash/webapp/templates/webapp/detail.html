@@ -1,0 +1,38 @@
+{% extends 'webapp/base.html' %}
+
+{% block content %}
+
+<h1>{{ trader.username }}</h1>
+<ul>
+    <li>Reputation: {{ trader.profile.score }}</li>
+    <li>{% if trader.profile.localbitcoins_verified %}Verified User On LocalBitcoins: <a href="https://localbitcoins.com/accounts/profile/{{trader.profile.localbitcoins_username}}">{{trader.profile.localbitcoins_username}}</a> {% endif %}</li>
+    <li>{% if trader.profile.paxful_verified %}Verified User On Paxful: <a href="https://paxful.com/user/{{trader.profile.paxful_username}}">{{trader.profile.paxful_username}}</a>{% endif %}</li>
+</ul>
+
+
+</br></br>
+
+<a href="{% url 'new_review' trader.username %}">Leave a review</a>
+
+</br></br>
+
+Advertisements:
+<ul>
+{% for ad in trader.advertisement_set.all %}
+    <li><a href="{% url 'ad' ad.id %}">{{ ad.ad_text }}</a></li>
+{% endfor %}
+</ul>
+
+</br></br>
+
+Reviews:
+<ul>
+{% for review in trader.reviews.all %}
+    </br></br>
+    <li><h2>{{ review.review_title }}</h2></li>
+    <li>{{ review.score }}</li>
+    <li>{{ review.comment }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

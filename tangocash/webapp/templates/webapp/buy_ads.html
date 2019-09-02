@@ -1,0 +1,125 @@
+{% extends 'webapp/base.html' %}
+
+{% block content %}
+
+<h1 class="title is-1 has-text-centered">BUY BITCOIN</h1>
+
+<div class="level">
+  <form method="post">
+      {% csrf_token %}
+      
+      <div>
+        {{ form.location.label_tag }}<br>
+        {{ form.location }}
+        {% if form.location.help_text %}
+          <small style="color: grey">{{ form.location.help_text }}</small>
+        {% endif %}
+        {% for error in form.location.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+        {{ form.place_id.as_hidden }}
+
+      <div>
+        {{ form.radius.label_tag }}<br>
+        {{ form.radius }}
+        {% if form.radius.help_text %}
+          <small style="color: grey">{{ form.radius.help_text }}</small>
+        {% endif %}
+        {% for error in form.radius.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+      </div>
+      
+      <div id="radius-text">{{ form.radius.value }}km</div>
+
+      <div>
+        {{ form.currency.label_tag }}<br>
+        {{ form.currency }}
+        {% if form.currency.help_text %}
+          <small style="color: grey">{{ form.currency.help_text }}</small>
+        {% endif %}
+        {% for error in form.currency.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <button type="submit">Search</button>
+    </form>
+</div>
+
+<div>{% if location %}Showing the ads nearest to you - {{location}}{% else %}Showing all ads - search for a location to find ads near you{% endif %}</div>
+
+<table class="table is-fullwidth is-hoverable is-striped">
+  <thead>
+    <tr>
+      <th>Seller</th>
+      <th>Price / BTC</th>
+      <th>Markup</th>
+      <th>Limits</th>
+      <th>Location</th>
+      <th>Distance</th>
+      <th></th>
+    </tr>
+  </thead>
+  
+  <tbody>
+    {% for ad in ads_list %}
+    <tr class="clickable-row" data-href="{% url 'ad' ad.id %}">
+      <th><a href="{% url 'detail' ad.trader.username %}">{{ad.trader}}</a></th>
+      <td>{{ad.price}} {{ad.currency.id}}</td>
+      <td>{{ad.markup}}%</td>
+      <td>{{ad.min_volume}} - {{ad.max_volume}} {{ad.currency.id}}</td>
+      <td>{{ad.location_name}}</td>
+      <td>{% if ad.distance.km %}{{ad.distance.km|floatformat}}km{% else %}Choose a Location{% endif %}</td>
+      <td><a class="button" href="{% url 'chat'%}?to={{ ad.trader.username }}">Buy</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+</table>
+
+{% endblock %}
+
+{% block javascript %}
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+  jQuery(document).ready(function($) {
+
+    $("#id_location").on('input', function(){
+
+      let location = $(this).val();
+
+      $.ajax({
+        url: '/ajax/get_locations/',
+        data: {
+          'location': location
+        },
+        dataType: 'json',
+        success: data => {
+          console.log(data);
+          $("#id_location").autocomplete({
+            source: data['locations'],
+            select: function (event, ui) {
+              $("#id_location").val(ui.item.value);
+              $("#id_place_id").val(ui.item.id);
+            }
+          });
+        }
+      });
+    });
+
+    $("#id_radius").on("input change", function() { 
+      $("#radius-text").text($(this).val() + "km");
+    });
+
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    }).css("cursor", "pointer");
+  });
+
+</script>
+
+{% endblock %}

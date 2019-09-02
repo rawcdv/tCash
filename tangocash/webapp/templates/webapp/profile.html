@@ -1,0 +1,39 @@
+{% extends 'webapp/base.html' %}
+
+{% block content %}
+
+<h2>{{ user.get_full_name }}</h2>
+<ul>
+  <li>Username: {{ user.username }}</li>
+  <li>Email: {{ user.email }}</li>
+  <li>registered: {{ user.date_joined }}</li>
+  <li>Phone: {{ user.profile.phone_number }}</li>
+  <li>Score: {{ user.profile.score }}</li>
+</ul>
+
+</br>
+
+{% if user.profile.localbitcoins_verified %}
+  <h2><b>Verified On LocalBitcoins</b></h2>
+  Username: <a href="https://localbitcoins.com/accounts/profile/{{user.profile.localbitcoins_username}}">{{user.profile.localbitcoins_username}}</a>
+{% else %}
+  <h2><b>Not verified on LocalBitcoins</b></h2>
+{% endif %}
+
+{% if user.profile.paxful_verified %}
+  <h2><b>Verified On Paxful</b></h2>
+  Username: <a href="https://paxful.com/user/{{user.profile.paxful_username}}">{{user.profile.paxful_username}}</a>
+{% else %}
+  <h2><b>Not verified on Paxful</b></h2>
+{% endif %}
+
+</br></br>
+Advertisements:
+<ul>
+{% for ad in user.advertisement_set.all %}
+  <li><a href="{% url 'ad' ad.id %}">{{ ad.ad_text }}</a></li>
+    
+{% endfor %}
+</ul>
+
+{% endblock %}

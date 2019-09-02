@@ -1,0 +1,82 @@
+{% extends 'webapp/base.html' %}
+
+{% block content %}
+
+<h1>Update your P2P Profiles</h1>
+</br>
+
+{% if user.profile.localbitcoins_requested %}
+  <h2>Your LocalBitcoins profile is currently being verified. Your profile should be verified within the next few minutes</h2>
+{% endif %}
+
+Importing Your Reputation is Easy!
+
+<ul>
+  <li>1. Paste the code below in the description of your LocalBitcoins or Paxful profile </li>
+    <p><b>{{ verification_code }}</b></p>
+  <li>2. Enter your usernames below and click save</li>
+  <li>3. Wait for your accounts to be verified. LocalBitcoin accounts verified instantly. Paxful accounts are verified manually - Usually within 24 hours</li>
+  <li>4. Once the accounts are verified, you may remove the code from your description </li>
+  <li>Note: Check your public profile is accessible</li>
+</ul>
+
+</br>
+
+<form method="post">
+  {% csrf_token %}
+  <div>
+    {{ form.localbitcoins_username.label_tag }}
+    <br>
+    {{ form.localbitcoins_username }}
+    
+    {% if user.profile.localbitcoins_verified %}
+    Verified
+    {% elif user.profile.localbitcoins_request %}
+    Request Being Processed
+    {% endif %}
+
+    {% if form.localbitcoins_username.help_text %}
+      <small style="color: grey">{{ form.localbitcoins_username.help_text }}</small>
+    {% endif %}
+    {% for error in form.localbitcoins_username.errors %}
+      <p style="color: red">{{ error }}</p>
+    {% endfor %}
+  </div>
+  <div>
+    {{ form.paxful_username.label_tag }}
+    <br>
+    {{ form.paxful_username }}
+    
+    {% if user.profile.paxful_verified %}
+    Verified
+    {% elif user.profile.paxful_request %}
+    Request Being Processed
+    {% endif %}
+
+    {% if form.paxful_username.help_text %}
+      <small style="color: grey">{{ form.paxful_username.help_text }}</small>
+    {% endif %}
+    {% for error in form.paxful_username.errors %}
+      <p style="color: red">{{ error }}</p>
+    {% endfor %}
+  </div>
+  <button type="submit">Save</button>
+</form>
+
+</br>
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+          {{ message }}
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% endif %}
+
+</br>
+
+{% endblock %}
